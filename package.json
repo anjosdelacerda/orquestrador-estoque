@@ -1,0 +1,14 @@
+{
+  "name": "lyncas",
+  "version": "1.0.0",
+  "description": "Orquestrador de Estoque — Lyncas Workspace",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "start:backend": "npm run start:dev --workspace=backend",
+    "start:frontend": "npm run dev --workspace=frontend"
+  }
+}
