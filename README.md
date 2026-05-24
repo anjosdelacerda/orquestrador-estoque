@@ -98,6 +98,16 @@ docker-compose up -d frontend
 
 ---
 
+## Como o ambiente é criado automaticamente
+
+Ao rodar `docker compose up --build`, o Docker executa toda a inicialização do zero a partir das variáveis definidas nos arquivos `.env`:
+
+- **Banco de dados**: o MySQL cria o banco, o usuário e define as senhas com exatamente os valores que você escolher no `.env` — não há credenciais fixas no código. Cada pessoa que clonar o repositório define as suas próprias.
+- **Migrations**: o backend roda as migrations automaticamente ao subir, criando as tabelas necessárias no banco recém-criado.
+- **Seed de produtos**: um script é executado na inicialização do backend e insere os produtos iniciais na tabela `products` automaticamente — não é necessário nenhum passo manual.
+
+---
+
 ## Configuração dos arquivos `.env`
 
 O projeto utiliza variáveis de ambiente em **três locais distintos**. Antes de qualquer outro passo, crie os três arquivos `.env` baseando-se nos respectivos `.env.example`.
