@@ -12,7 +12,7 @@ export class ProductsService {
     private readonly productsRepository: Repository<Product>,
   ) {}
 
-  create(createProductDto: CreateProductDto): Promise<Product> {
+  async create(createProductDto: CreateProductDto): Promise<Product> {
     const product = this.productsRepository.create(createProductDto);
     return this.productsRepository.save(product);
   }
