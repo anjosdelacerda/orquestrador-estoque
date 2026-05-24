@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
 import { CheckoutModule } from './checkout/checkout.module';
+import { ErpModule } from './erp/erp.module';
 import { Product } from './products/product.entity';
 import { CheckoutAttempt } from './checkout/checkout-attempt.entity';
 import { AppDataSource } from './database/data-source';
@@ -19,6 +20,7 @@ import { AppDataSource } from './database/data-source';
     }),
     ProductsModule,
     CheckoutModule,
+    ErpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
