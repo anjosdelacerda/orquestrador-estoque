@@ -1,4 +1,4 @@
-# Orquestrador de Estoque — Lyncas
+# Orquestrador de Estoque — TOTVS
 
 Vitrine de produtos com fluxo de checkout integrado a um mock de ERP externo.
 Desenvolvido como desafio técnico Full Stack (Júnior).
@@ -31,6 +31,7 @@ Essa funcionalidade **só existe no Docker Compose v2** (plugin em Go). O docker
 | Docker antigo com docker-compose v1 standalone | `docker-compose`          |
 
 > Para verificar qual versão você tem:
+>
 > ```bash
 > docker compose version   # v2 — deve retornar "Docker Compose version v2.x.x"
 > docker-compose --version # v1 — retorna "docker-compose version 1.x.x"
@@ -54,6 +55,7 @@ docker-compose up -d frontend
 ```
 
 > A forma mais simples de resolver definitivamente é instalar o plugin do Compose v2:
+>
 > ```bash
 > # Linux
 > sudo apt-get install docker-compose-plugin
@@ -65,6 +67,7 @@ docker-compose up -d frontend
 ## Tecnologias utilizadas
 
 ### Backend
+
 - **NestJS 10** — framework Node.js para APIs REST
 - **TypeORM 0.3** — ORM com migrations e entities
 - **MySQL 8** — banco de dados relacional
@@ -72,6 +75,7 @@ docker-compose up -d frontend
 - **Axios** — cliente HTTP para comunicação com o ERP
 
 ### Frontend
+
 - **React 18** + **Vite 5** — SPA moderna com HMR
 - **TypeScript 5** — tipagem estática em todo o projeto
 - **TanStack Query (React Query) v5** — cache e estado de servidor
@@ -79,14 +83,17 @@ docker-compose up -d frontend
 - **Axios** — chamadas HTTP ao backend
 
 ### Infraestrutura
+
 - **Docker** + **Docker Compose v2** — orquestração de containers
 - **MySQL 8.0 (container)** — banco isolado por ambiente
 
 ### Testes
+
 - **Jest** + **Supertest** — testes E2E do backend
 - **SQLite (in-memory)** — banco em memória usado nos testes automatizados
 
 ### Desenvolvimento assistido por IA
+
 - **Claude Code (Anthropic)** — assistente de IA utilizado durante o desenvolvimento para scaffolding, revisão de código e documentação
 
 ---
@@ -202,15 +209,15 @@ Esse comportamento é **intencional** e faz parte do desafio técnico — o obje
 
 ## Endpoints do backend
 
-| Método | Rota                      | Descrição                                          |
-| ------ | ------------------------- | -------------------------------------------------- |
-| GET    | `/api/status`             | Healthcheck — estado do backend e do banco         |
-| GET    | `/api/products`           | Lista todos os produtos                            |
-| POST   | `/api/products`           | Cria um produto                                    |
-| GET    | `/api/products/:id`       | Busca produto por UUID                             |
-| PATCH  | `/api/products/:id`       | Atualiza parcialmente um produto                   |
-| DELETE | `/api/products/:id`       | Remove um produto                                  |
-| POST   | `/api/checkout`           | Processa o checkout de um produto                  |
+| Método | Rota                | Descrição                                  |
+| ------ | ------------------- | ------------------------------------------ |
+| GET    | `/api/status`       | Healthcheck — estado do backend e do banco |
+| GET    | `/api/products`     | Lista todos os produtos                    |
+| POST   | `/api/products`     | Cria um produto                            |
+| GET    | `/api/products/:id` | Busca produto por UUID                     |
+| PATCH  | `/api/products/:id` | Atualiza parcialmente um produto           |
+| DELETE | `/api/products/:id` | Remove um produto                          |
+| POST   | `/api/checkout`     | Processa o checkout de um produto          |
 
 ---
 
