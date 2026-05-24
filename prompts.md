@@ -1,74 +1,188 @@
-Atue como um Engenheiro de Software Sênior e Especialista em arquitetura limpa. Estou na pasta raiz vazia chamada "lyncas". Seu objetivo é criar a estrutura inicial automatizada, segura e componentizada do projeto "orquestrador de estoque" utilizando Docker Compose, NestJS, React e MySQL.
+Atue como um Staff Software Engineer, Arquiteto de Soluções e especialista em DevOps. Você está inicializando um monorepo profissional chamado `lyncas` para um desafio técnico da TOTVS (CaseCellShop).
 
-Escreva todos os arquivos de código, configurações e infraestrutura diretamente no meu workspace seguindo as instruções abaixo de segurança, arquitetura e legibilidade:
+Stack:
 
-1. ARQUITETURA DE PASTAS E WORKSPACES (RAIZ)
+- Monorepo com npm workspaces
+- Backend: NestJS + TypeORM + MySQL 8
+- Frontend: React + Vite + TypeScript + TanStack Query
+- Docker Compose para orquestração completa
 
-Raiz (/lyncas): Deve conter o docker-compose.yml, .gitignore, README.md, prompts.md e um package.json configurado com "workspaces": ["backend", "frontend"] para permitir que eu rode um único npm install na raiz para o Intellisense do VS Code reconhecer tudo de uma vez.
+Objetivo:
+Gerar toda a estrutura inicial do projeto já preparada para ambiente realista de desenvolvimento com MIGRATIONS AUTOMATIZADAS via TypeORM, sem uso de `synchronize: true`.
 
-/backend: Aplicação NestJS completa com TypeScript e TypeORM. Deve conter seu próprio Dockerfile.
+======================================================================
+REQUISITOS DE ARQUITETURA
+======================================================================
 
-/frontend: Aplicação React completa com Vite, TypeScript e React Query (TanStack Query) integrado. Deve conter seu próprio Dockerfile.
+Estrutura:
 
-2. SEGURANÇA, DOCKER COMPOSE E CICLO DE VIDA
+- /backend
+- /frontend
+- package.json na raiz com workspaces
+- docker-compose.yml na raiz
+- README.md
+- prompts.md
+- .gitignore
 
-O docker-compose.yml na raiz deve gerenciar 3 containers: db (MySQL 8), backend e frontend.
+======================================================================
+DOCKER E ORQUESTRAÇÃO
+======================================================================
 
-Mapeie as portas: 3000 (frontend), 3001 (backend) e 3306 (MySQL).
+O docker-compose deve subir 3 serviços:
 
-PROIBIDO: Não coloque nenhuma credencial hardcoded e NÃO use a diretiva env_file geral que esconde as variáveis.
+- db (MySQL 8)
+- backend
+- frontend
 
-OBRIGATÓRIO: Use DECLARAÇÃO INLINE EXPLÍCITA na propriedade environment de cada serviço, mapeando as variáveis a partir do ambiente da raiz usando a sintaxe ${VARIAVEL}.
+Portas:
 
-Configure healthchecks reais: o backend só inicia após o db estar totalmente 'healthy' via mysqladmin; o frontend só inicia após o backend estar 'healthy' (testando o endpoint /api/status).
+- frontend: 3000
+- backend: 3001
+- mysql: 3307
 
-OBRIGATÓRIO (Ciclo de Vida): O Dockerfile do backend (ou a instrução command no docker-compose) DEVE executar as migrations antes de subir o servidor NestJS. Exemplo de comando: npm run migration:run && npm run start:dev.
+Regras obrigatórias:
 
-3. BANCO DE DADOS, MIGRATIONS E BACKEND (NESTJS)
+- NÃO usar credenciais hardcoded
+- NÃO usar env_file
+- Todas as variáveis devem ser explicitamente declaradas no `environment:` usando `${VAR}`
 
-No NestJS, configure o TypeORM com synchronize: false. O controle do banco DEVE ser feito exclusivamente por migrations.
+Healthchecks obrigatórios:
 
-Crie um arquivo src/database/data-source.ts isolado. Ele deve ler as variáveis de ambiente (via dotenv) e ser configurado para uso da CLI do TypeORM.
+- db → mysqladmin ping
+- backend → GET /api/status
+- frontend depende do backend saudável
 
-Adicione os scripts da CLI do TypeORM no package.json do backend (ex: typeorm, migration:generate, migration:run).
+======================================================================
+REGRA CRÍTICA DO CICLO DE VIDA
+======================================================================
 
-Crie a Entidade Product (tabela products) contendo: id (uuid v4), name (string), price (decimal/float) e qtd (int).
+O fluxo do `docker compose up --build` DEVE ser:
 
-Crie e inclua o arquivo da Migration Inicial (1600000000000-CreateProductsTable.ts na pasta src/database/migrations) para criar a tabela products com esses campos.
+1. Subir MySQL
+2. Esperar MySQL ficar healthy
+3. Subir backend
+4. Backend executar automaticamente:
+   - `npm run migration:run`
+5. Somente após migrations concluírem:
+   - executar `npm run start:dev`
+6. Frontend sobe apenas após backend healthy
 
-Crie o CRUD básico funcional da entidade (Module, Controller, Service).
+IMPORTANTE:
+Se eu executar:
 
-Crie uma rota de healthcheck simplificada GET /api/status que testa a conexão ativa com o banco de dados e retorna um JSON de sucesso.
+- `docker compose down -v`
+- depois `docker compose up --build`
 
-4. CONFIGURAÇÃO DO FRONTEND (REACT)
+O banco deve nascer automaticamente já com as tabelas criadas pelas migrations, sem qualquer ação manual.
 
-Configure o React Query no main.tsx ou App.tsx.
+======================================================================
+BACKEND (NESTJS + TYPEORM)
+======================================================================
 
-Na tela inicial, use o useQuery para disparar uma requisição para GET /api/status do backend (usando a variável de URL da API).
+Configurar:
 
-Se a requisição for bem-sucedida, exiba um painel com a mensagem: "Docker executado com sucesso! Migrations rodaram, Banco de Dados Inicializado e Frontend Conectado. Pronto para iniciar a codificação do checkout."
+- TypeORM com `synchronize: false`
+- ConfigService lendo variáveis de ambiente
+- arquivo isolado:
+  - `src/database/data-source.ts`
+- CLI do TypeORM funcional
 
-5. ESTRUTURA DE ARQUIVOS .ENV E TEMPLATES
-   Crie a árvore de arquivos de ambiente, mas todos os valores devem vir TOTALMENTE VAZIOS ou com placeholders genéricos:
+Adicionar scripts:
 
-/.env.example (RAIZ): Template com todas as variáveis (MYSQL_ROOT_PASSWORD, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, BACKEND_PORT, VITE_API_URL).
+- typeorm
+- migration:generate
+- migration:run
+- migration:revert
 
-/.env (RAIZ): Cópia exata do arquivo acima, com valores em branco.
+Criar:
 
-/backend/.env.example e /backend/.env: Contendo as chaves locais do NestJS em branco.
+- entidade `Product`
+- tabela `products`
 
-/frontend/.env.example e /frontend/.env: Contendo a chave local do Vite em branco.
+Campos:
 
-6. ATUALIZAÇÃO DO .GITIGNORE (RAIZ)
-   Adicione as seguintes regras exatas para não commitar chaves reais:
-   / .env
-   / .env.local
-   !/ .env.example
+- id (uuid v4)
+- name (string)
+- price (decimal)
+- qtd (int)
 
-7. DOCUMENTAÇÃO E INSTRUÇÕES DE BOOTSTRAP
+Criar:
 
-Crie um README.md explicando o setup. Deixe explícito que o desenvolvedor DEVE preencher os .env antes de rodar docker compose up --build.
+- migration inicial em:
+  - `src/database/migrations`
 
-Explique que, graças ao setup, o banco já nascerá com as tabelas prontas via migrations automatizadas no boot do container do backend.
+Criar:
 
-Crie o arquivo prompts.md registrando este escopo.
+- CRUD básico da entidade
+- rota:
+  - `GET /api/status`
+
+A rota deve validar conexão ativa com banco e retornar JSON de sucesso.
+
+======================================================================
+FRONTEND
+======================================================================
+
+Configurar:
+
+- React + Vite + TypeScript
+- TanStack Query
+
+Tela inicial:
+
+- consumir `GET /api/status`
+- exibir mensagem de sucesso quando backend/db estiverem operacionais
+
+======================================================================
+ENVIRONMENTS
+======================================================================
+
+Criar:
+
+- /.env
+- /.env.example
+- /backend/.env
+- /backend/.env.example
+- /frontend/.env
+- /frontend/.env.example
+
+Todos sem valores reais.
+
+Variáveis necessárias:
+
+- MYSQL_ROOT_PASSWORD
+- MYSQL_USER
+- MYSQL_PASSWORD
+- MYSQL_DATABASE
+- DB_HOST
+- DB_PORT
+- DB_USER
+- DB_PASSWORD
+- DB_NAME
+- BACKEND_PORT
+- VITE_API_URL
+
+======================================================================
+GITIGNORE
+======================================================================
+
+Garantir que `.env` reais nunca sejam commitados, mas `.env.example` sejam permitidos.
+
+======================================================================
+ENTREGA
+======================================================================
+
+- Gere todos os arquivos completos
+- Escreva código pronto para execução
+- Não explique teoria
+- Não resuma
+- Não omita arquivos importantes
+- Não use pseudocódigo
+- Não use synchronize
+- Não invente credenciais
+- Não deixar etapas manuais para migrations
+
+O projeto deve subir funcional apenas com:
+
+- preencher .env
+- `docker compose up --build`
