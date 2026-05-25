@@ -1,11 +1,12 @@
 import {
   BadGatewayException,
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { OptimisticLockVersionMismatchError, Repository } from 'typeorm';
 import { CheckoutAttempt } from './checkout-attempt.entity';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 import { OrderStatus } from './enums/order-status.enum';
@@ -46,7 +47,17 @@ export class CheckoutService {
     await this.checkoutRepo.save(attempt);
 
     product.stockQuantity -= dto.quantity;
-    await this.productRepo.save(product);
+    try {
+      await this.productRepo.save(product);
+    } catch (error) {
+      if (error instanceof OptimisticLockVersionMismatchError) {
+        attempt.status = OrderStatus.FAILED;
+        attempt.errorMessage = 'Conflito de concorrência: tente novamente.';
+        await this.checkoutRepo.save(attempt);
+        throw new ConflictException('Conflito de concorrência: tente novamente.');
+      }
+      throw error;
+    }
 
     attempt.status = OrderStatus.PROCESSING;
     await this.checkoutRepo.save(attempt);
