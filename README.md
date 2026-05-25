@@ -217,6 +217,18 @@ Esse comportamento é **intencional** e faz parte do desafio técnico — o obje
 
 ---
 
+## Testes automatizados
+
+Os testes E2E do backend rodam com SQLite in-memory — sem precisar do Docker ou do MySQL.
+
+```bash
+cd backend
+npm install
+npm test
+```
+
+---
+
 ## Endpoints do backend
 
 | Método | Rota                | Descrição                                  |
