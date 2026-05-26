@@ -5,6 +5,14 @@ Desenvolvido como desafio técnico Full Stack (Júnior).
 
 ---
 
+# Deploy
+
+se for incômodo rodar o projeto com o Docker, o deploy do teste foi realizado:
+
+https://dpltv-fe-production.up.railway.app/
+
+---
+
 ## Pré-requisitos
 
 | Ferramenta     | Versão mínima                                       |
